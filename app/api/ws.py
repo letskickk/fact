@@ -12,6 +12,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 
 from app.capture.stream import capture_audio_chunks
 from app.stt.whisper import transcribe
+from app.stt.refiner import refine
 from app.checker.classifier import classify
 from app.checker.verifier import verify
 from app.models.schemas import Statement
@@ -49,9 +50,12 @@ async def _run_pipeline(ws: WebSocket, session_id: str, youtube_url: str) -> Non
             elapsed = time.time() - start_time
 
             # Step 1: STT
-            text = await transcribe(audio_path)
-            if not text:
+            raw_text = await transcribe(audio_path)
+            if not raw_text:
                 continue
+
+            # Step 1.5: LLM 텍스트 보정
+            text = await refine(raw_text)
 
             statement = Statement(
                 text=text,
