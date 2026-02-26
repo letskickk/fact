@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전한길 토론용 FACT 체크</title>
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+    <header>
+        <h1>전한길 토론용 FACT 체크</h1>
+        <p class="subtitle">Deep Research + LLM + Reference Files</p>
+        <div id="ref-files" class="ref-files"></div>
+    </header>
+
+    <main>
+        <section class="control-panel">
+            <div class="input-group">
+                <input type="text" id="youtube-url" placeholder="유튜브 라이브 URL을 입력하세요">
+                <button id="btn-start">시작</button>
+                <button id="btn-stop" disabled>중지</button>
+            </div>
+            <div id="status" class="status">대기 중</div>
+        </section>
+
+        <div class="panels">
+            <section class="panel transcript-panel">
+                <h2>실시간 자막</h2>
+                <div id="transcript-list" class="scroll-list"></div>
+            </section>
+
+            <section class="panel factcheck-panel">
+                <h2>팩트체크 결과</h2>
+                <div id="factcheck-list" class="scroll-list"></div>
+            </section>
+        </div>
+
+        <section class="stats-bar">
+            <span id="stat-total">전체: 0</span>
+            <span id="stat-checked">검증: 0</span>
+            <span id="stat-fact" class="verdict-fact">사실: 0</span>
+            <span id="stat-partial" class="verdict-partial">부분: 0</span>
+            <span id="stat-false" class="verdict-false">거짓: 0</span>
+            <span id="stat-unknown" class="verdict-unknown">확인불가: 0</span>
+        </section>
+    </main>
+
+    <script src="app.js?v=4"></script>
+</body>
+</html>

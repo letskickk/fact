@@ -13,9 +13,13 @@ build/
 # Data
 data/chroma/
 data/embeddings.db
+data/facts/
+data/youtube_cookies.txt
+logs/
 *.wav
 *.mp3
 *.tmp
+*.pem
 
 # IDE
 .vscode/
