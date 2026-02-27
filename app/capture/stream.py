@@ -56,25 +56,29 @@ def _get_env() -> dict:
 
 
 def _get_stream_url(youtube_url: str, env: dict) -> str:
-    """Use yt-dlp to extract the HLS stream URL."""
-    cmd = [
-        sys.executable, "-m", "yt_dlp",
-        "--remote-components", "ejs:github",
-        "-f", "91",  # lowest quality with audio (fast)
-        "-g",         # print URL only
-    ]
-    if settings.youtube_cookies_file:
-        cmd += ["--cookies", settings.youtube_cookies_file]
-    cmd.append(youtube_url)
-    logger.info("Getting stream URL: %s", youtube_url)
-    r = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=30)
-    if r.returncode != 0:
-        raise RuntimeError(f"yt-dlp failed: {r.stderr[:300]}")
-    url = r.stdout.strip()
-    if not url:
-        raise RuntimeError("yt-dlp returned empty URL")
-    logger.info("Got HLS URL (length=%d)", len(url))
-    return url
+    """Use yt-dlp to extract the audio stream URL (live + regular)."""
+    # 라이브(91) 먼저 시도, 실패하면 일반 오디오로 폴백
+    formats = ["91", "worstaudio[ext=m4a]/worstaudio/bestaudio"]
+
+    for fmt in formats:
+        cmd = [
+            sys.executable, "-m", "yt_dlp",
+            "--remote-components", "ejs:github",
+            "-f", fmt,
+            "-g",         # print URL only
+        ]
+        if settings.youtube_cookies_file:
+            cmd += ["--cookies", settings.youtube_cookies_file]
+        cmd.append(youtube_url)
+        logger.info("Getting stream URL: %s (format=%s)", youtube_url, fmt)
+        r = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=30)
+        if r.returncode == 0 and r.stdout.strip():
+            url = r.stdout.strip()
+            logger.info("Got audio URL (format=%s, length=%d)", fmt, len(url))
+            return url
+        logger.info("Format %s not available, trying next...", fmt)
+
+    raise RuntimeError(f"yt-dlp failed: no available format. {r.stderr[:300]}")
 
 
 def _record_chunk(
