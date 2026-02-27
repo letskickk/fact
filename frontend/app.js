@@ -114,6 +114,10 @@ function connect() {
     ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         switch (msg.type) {
+            case "ping":
+                // 서버 keepalive에 응답
+                ws.send(JSON.stringify({ action: "pong" }));
+                break;
             case "transcription":
                 addTranscript(msg.data);
                 break;

@@ -99,6 +99,21 @@ def _extract_hwpx_text(path: Path) -> str:
     return "\n".join(texts)
 
 
+def _extract_xlsx_text(path: Path) -> str:
+    """Extract text from Excel (.xlsx) file using openpyxl."""
+    from openpyxl import load_workbook
+
+    wb = load_workbook(str(path), read_only=True, data_only=True)
+    texts = []
+    for ws in wb.worksheets:
+        for row in ws.iter_rows(values_only=True):
+            cells = [str(c) for c in row if c is not None]
+            if cells:
+                texts.append(" | ".join(cells))
+    wb.close()
+    return "\n".join(texts)
+
+
 def _chunk_text(text: str, source: str) -> list[dict]:
     """Split text into overlapping chunks with metadata."""
     chunks = []
@@ -146,6 +161,8 @@ def load_all_documents() -> list[dict]:
                 text = _extract_hwp_text(f)
             elif ext == ".hwpx":
                 text = _extract_hwpx_text(f)
+            elif ext in (".xlsx", ".xls"):
+                text = _extract_xlsx_text(f)
             elif ext in (".txt", ".md", ".csv"):
                 text = _extract_txt_text(f)
             else:

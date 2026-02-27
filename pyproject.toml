@@ -15,6 +15,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "pypdf>=4.0.0",
     "olefile>=0.47",
+    "openpyxl>=3.1.0",
 ]
 
 [project.scripts]

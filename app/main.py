@@ -55,6 +55,8 @@ def main():
         host=settings.host,
         port=settings.port,
         reload=True,
+        ws_ping_interval=30,
+        ws_ping_timeout=30,
     )
 
 

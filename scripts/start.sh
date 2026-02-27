@@ -17,7 +17,7 @@ export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 
 echo "서버 시작 중..."
-nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > ~/fact/logs/server.log 2>&1 &
+nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --ws-ping-interval 30 --ws-ping-timeout 30 > ~/fact/logs/server.log 2>&1 &
 echo $! > ~/fact/logs/server.pid
 
 sleep 2
