@@ -32,31 +32,90 @@ header h1 {
 
 .ref-files {
     margin-top: 10px;
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
+    display: inline-block;
+    text-align: left;
 }
 
-.ref-file-tag {
+.ref-summary {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 12px;
+    gap: 6px;
+    padding: 5px 14px;
     background: #1a2a1a;
     border: 1px solid #2a3a2a;
     border-radius: 16px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: #6abf6a;
+    cursor: pointer;
+    user-select: none;
 }
 
-.ref-file-tag .file-icon {
-    font-size: 0.7rem;
+.ref-summary:hover {
+    background: #1f331f;
 }
 
-.ref-file-tag .file-size {
+.ref-toggle {
+    font-size: 0.6rem;
+    transition: transform 0.2s;
+}
+
+.ref-files.expanded .ref-toggle {
+    transform: rotate(180deg);
+}
+
+.ref-file-list {
+    display: none;
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: #141e14;
+    border: 1px solid #2a3a2a;
+    border-radius: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.ref-files.expanded .ref-file-list {
+    display: block;
+}
+
+.ref-folder {
+    font-size: 0.72rem;
     color: #4a8a4a;
-    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+
+.ref-folder:first-child {
+    margin-top: 0;
+}
+
+.ref-file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 0.75rem;
+    color: #8ac88a;
+}
+
+.ref-file-item .file-icon {
+    font-size: 0.65rem;
+    color: #5a9a5a;
+    min-width: 24px;
+}
+
+.ref-file-item .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ref-file-item .file-size {
+    color: #4a7a4a;
+    font-size: 0.68rem;
+    white-space: nowrap;
 }
 
 main {

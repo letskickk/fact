@@ -65,7 +65,7 @@ def load_all_documents() -> list[dict]:
         return []
 
     all_chunks = []
-    for f in sorted(FACTS_DIR.iterdir()):
+    for f in sorted(FACTS_DIR.rglob("*")):
         if f.name.startswith(".") or not f.is_file():
             continue
 
@@ -78,9 +78,12 @@ def load_all_documents() -> list[dict]:
                 logger.info("Skipping unsupported file: %s", f.name)
                 continue
 
-            chunks = _chunk_text(text, f.name)
+            # 하위폴더 경로 포함한 소스명
+            rel_path = f.relative_to(FACTS_DIR)
+            source_name = str(rel_path).replace("\\", "/")
+            chunks = _chunk_text(text, source_name)
             all_chunks.extend(chunks)
-            logger.info("Loaded %s: %d chunks (%d chars)", f.name, len(chunks), len(text))
+            logger.info("Loaded %s: %d chunks (%d chars)", source_name, len(chunks), len(text))
 
         except Exception as e:
             logger.warning("Failed to load %s: %s", f.name, e)

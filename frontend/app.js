@@ -172,13 +172,40 @@ async function loadRefFiles() {
             container.innerHTML = '<span style="color:#555;font-size:0.78rem">참조 파일 없음 — data/facts/ 폴더에 파일을 추가하세요</span>';
             return;
         }
-        container.innerHTML = data.files.map(f =>
-            `<span class="ref-file-tag">
-                <span class="file-icon">${f.name.endsWith('.pdf') ? 'PDF' : 'TXT'}</span>
-                ${f.name}
-                <span class="file-size">(${f.size})</span>
-            </span>`
-        ).join("");
+
+        const totalSize = data.files.reduce((acc, f) => {
+            const num = parseFloat(f.size);
+            return acc + (f.size.includes("MB") ? num : num / 1024);
+        }, 0);
+
+        // 폴더별 그룹핑
+        const groups = {};
+        data.files.forEach(f => {
+            const parts = f.name.split("/");
+            const folder = parts.length > 1 ? parts.slice(0, -1).join("/") : "";
+            if (!groups[folder]) groups[folder] = [];
+            groups[folder].push({ ...f, short: parts[parts.length - 1] });
+        });
+
+        const fileListHtml = Object.entries(groups).map(([folder, files]) => {
+            const folderLabel = folder ? `<div class="ref-folder">${folder}/</div>` : "";
+            const items = files.map(f =>
+                `<div class="ref-file-item">
+                    <span class="file-icon">${f.short.endsWith('.pdf') ? 'PDF' : 'TXT'}</span>
+                    <span class="file-name">${f.short}</span>
+                    <span class="file-size">${f.size}</span>
+                </div>`
+            ).join("");
+            return folderLabel + items;
+        }).join("");
+
+        container.innerHTML = `
+            <div class="ref-summary" onclick="this.parentElement.classList.toggle('expanded')">
+                <span>참조 문서 ${data.files.length}개 (${totalSize.toFixed(1)}MB)</span>
+                <span class="ref-toggle">▼</span>
+            </div>
+            <div class="ref-file-list">${fileListHtml}</div>
+        `;
     } catch (e) {
         console.error("Failed to load reference files:", e);
     }
