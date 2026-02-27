@@ -148,9 +148,10 @@ async def init_store() -> int:
         return 0
 
     current_files = {}
-    for f in sorted(facts_dir.iterdir()):
+    for f in sorted(facts_dir.rglob("*")):
         if f.is_file() and not f.name.startswith("."):
-            current_files[f.name] = _file_hash(f)
+            rel_path = str(f.relative_to(facts_dir)).replace("\\", "/")
+            current_files[rel_path] = _file_hash(f)
 
     if not current_files:
         _loaded = True

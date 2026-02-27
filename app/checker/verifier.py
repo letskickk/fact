@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 
 from openai import AsyncOpenAI
 
@@ -63,10 +64,10 @@ async def verify(
 
     # Extract JSON from response (may contain markdown fences)
     raw = raw.strip()
-    if raw.startswith("```"):
-        lines = raw.split("\n")
-        lines = [l for l in lines if not l.startswith("```")]
-        raw = "\n".join(lines)
+    if "```" in raw:
+        match = re.search(r"```(?:json)?\s*\n?(.*?)```", raw, re.DOTALL)
+        if match:
+            raw = match.group(1).strip()
 
     try:
         data = json.loads(raw)
