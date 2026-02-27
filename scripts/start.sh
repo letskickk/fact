@@ -12,9 +12,8 @@ if lsof -t -i:8000 > /dev/null 2>&1; then
     sleep 1
 fi
 
-# deno PATH
-export DENO_INSTALL="$HOME/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
+# PATH setup (uv, deno)
+export PATH="$HOME/.local/bin:$HOME/.deno/bin:$PATH"
 
 echo "서버 시작 중..."
 nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --ws-ping-interval 30 --ws-ping-timeout 30 > ~/fact/logs/server.log 2>&1 &

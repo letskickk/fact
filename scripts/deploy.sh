@@ -4,9 +4,10 @@
 set -e
 
 cd ~/fact
+export PATH="$HOME/.local/bin:$HOME/.deno/bin:$PATH"
 
 echo "=== 최신 코드 Pull ==="
-git pull origin main
+git pull origin master
 
 echo "=== 의존성 업데이트 ==="
 uv sync
