@@ -135,6 +135,7 @@ async def capture_audio_chunks(
     stream_url = await asyncio.to_thread(_get_stream_url, youtube_url, env)
 
     chunk_index = 0
+    fail_count = 0
     url_refresh_interval = 20  # refresh URL every N chunks (tokens expire)
 
     try:
@@ -161,14 +162,27 @@ async def capture_audio_chunks(
                             chunk_index, chunk_path.stat().st_size)
                 yield chunk_path
                 chunk_index += 1
+                fail_count = 0
 
                 # Clean up previous chunk to save disk
                 prev = workdir / f"chunk_{chunk_index - 2:04d}.wav"
                 if prev.exists():
                     prev.unlink(missing_ok=True)
             else:
-                logger.error("Failed to record chunk %d, stopping", chunk_index)
-                break
+                fail_count += 1
+                logger.warning("Chunk %d failed (attempt %d/5)", chunk_index, fail_count)
+                if fail_count >= 5:
+                    logger.error("5 consecutive failures, stopping")
+                    break
+                # URL 갱신 후 재시도
+                try:
+                    stream_url = await asyncio.to_thread(
+                        _get_stream_url, youtube_url, env
+                    )
+                    logger.info("Stream URL refreshed for retry")
+                except Exception as e:
+                    logger.warning("URL refresh failed: %s", e)
+                await asyncio.sleep(2)
 
     except asyncio.CancelledError:
         logger.info("Stream capture cancelled")
