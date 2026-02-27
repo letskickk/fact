@@ -191,7 +191,7 @@ async function loadRefFiles() {
             const folderLabel = folder ? `<div class="ref-folder">${folder}/</div>` : "";
             const items = files.map(f =>
                 `<div class="ref-file-item">
-                    <span class="file-icon">${f.short.endsWith('.pdf') ? 'PDF' : 'TXT'}</span>
+                    <span class="file-icon">${f.short.endsWith('.pdf') ? 'PDF' : f.short.endsWith('.hwp') || f.short.endsWith('.hwpx') ? 'HWP' : 'TXT'}</span>
                     <span class="file-name">${f.short}</span>
                     <span class="file-size">${f.size}</span>
                 </div>`
