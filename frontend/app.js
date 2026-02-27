@@ -8,6 +8,7 @@ const transcriptList = $("#transcript-list");
 const factcheckList = $("#factcheck-list");
 
 let ws = null;
+let activeUrl = "";  // 현재 실행 중인 URL (재연결 시 자동 재시작용)
 
 const stats = { total: 0, checked: 0, fact: 0, partial: 0, false: 0, unverifiable: 0 };
 
@@ -100,7 +101,13 @@ function connect() {
     ws = new WebSocket(`${protocol}//${location.host}/ws`);
 
     ws.onopen = () => {
-        setStatus("연결됨 — URL을 입력하고 시작하세요");
+        if (activeUrl) {
+            // 재연결 시 자동으로 파이프라인 재시작
+            ws.send(JSON.stringify({ action: "start", youtube_url: activeUrl }));
+            setStatus("재연결 — 파이프라인 재시작 중...", "running");
+        } else {
+            setStatus("연결됨 — URL을 입력하고 시작하세요");
+        }
         btnStart.disabled = false;
     };
 
@@ -152,11 +159,13 @@ btnStart.addEventListener("click", () => {
         return;
     }
     if (ws && ws.readyState === WebSocket.OPEN) {
+        activeUrl = url;
         ws.send(JSON.stringify({ action: "start", youtube_url: url }));
     }
 });
 
 btnStop.addEventListener("click", () => {
+    activeUrl = "";
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ action: "stop" }));
     }
